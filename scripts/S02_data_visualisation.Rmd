@@ -84,8 +84,11 @@ ggplot(raw_data, aes(x = prop_fertile, y = prop_fertile_2)) +
 
 
 ```
+the first graph suggests that both survival measures are fairly equivalent, and I think prop_survived is better to use, as it unaffected by the presence of females (24hr survival rate). 
+The second graph suggests to me that prop_fertile_2 is a more appropriate measure of fertility, as when accounting for loss of males overnight during the second night, we see that fertility increases significantly, often to 1, and there are no vials with both overnight deaths and offspring, showing that death, not sterility, are impacting these vials. 
+So, the two 'prop_fertile' and 'prop_fertile_2' are not interchangeable measures. 
 
-```{r plotting over temp}
+```{r plotting fert against temp, and limiting y axis to a max value of 1 (for proportions)}
 
 library(ggplot2)
 
@@ -115,7 +118,7 @@ ggplot(raw_data, aes(x = temp_stress, y = prop_fertile)) +
 ggplot(raw_data, aes(x = temp_stress, y = prop_fertile)) +
   geom_point() +
   stat_smooth(method = "gam", formula = y ~ s(x, k=5), se = TRUE) +
-  #scale_y_continuous(limits = c(0,1)) +
+  scale_y_continuous(limits = c(0,1)) +
   theme_minimal()
 
 
@@ -159,15 +162,66 @@ library(scales)
 
 ```
 
-```{r}
+```{r repeat for survival}
 
 ggplot(raw_data, aes( x = temp_stress, y = prop_survived)) +
  geom_point() +
- geom_smooth(method = "loess", se = TRUE)
+ geom_smooth(method = "loess", se = TRUE) +
+  theme_minimal()
+
+ggplot(raw_data, aes(x = temp_stress, y = prop_survived)) +
+  geom_point() +
+  stat_smooth(method = "glm", 
+              method.args = list(family = "binomial"), 
+              se = TRUE) +
+  scale_y_continuous(limits = c(0, 1)) +
+  theme_minimal()
+
+ggplot(raw_data, aes(x = temp_stress, y = prop_survived)) +
+  geom_point() +
+  stat_smooth(method = "glm",
+              formula = y ~ poly(x, 3),
+              method.args = list(family = "binomial"),
+              se = TRUE) +
+  scale_y_continuous(limits = c(0, 1)) +
+  theme_minimal()
+
+ggplot(raw_data, aes(x = temp_stress, y = prop_survived)) +
+  geom_point() +
+  stat_smooth(method = "gam", formula = y ~ s(x, k=5), se = TRUE) +
+  scale_y_continuous(limits = c(0,1)) +
+  theme_minimal()
   
+
+
+
 ggplot(raw_data, aes( x = temp_stress, y = prop_survived_2)) +
  geom_point() +
- geom_smooth(method = "loess", se = TRUE)
+ geom_smooth(method = "loess", se = TRUE) +
+  theme_minimal()
+
+ggplot(raw_data, aes(x = temp_stress, y = prop_survived_2)) +
+  geom_point() +
+  stat_smooth(method = "glm", 
+              method.args = list(family = "binomial"), 
+              se = TRUE) +
+  scale_y_continuous(limits = c(0, 1)) +
+  theme_minimal()
+
+ggplot(raw_data, aes(x = temp_stress, y = prop_survived_2)) +
+  geom_point() +
+  stat_smooth(method = "glm",
+              formula = y ~ poly(x, 3),
+              method.args = list(family = "binomial"),
+              se = TRUE) +
+  scale_y_continuous(limits = c(0, 1)) +
+  theme_minimal()
+
+ggplot(raw_data, aes(x = temp_stress, y = prop_survived_2)) +
+  geom_point() +
+  stat_smooth(method = "gam", formula = y ~ s(x, k=5), se = TRUE) +
+  scale_y_continuous(limits = c(0,1)) +
+  theme_minimal()
 
 ```
 
