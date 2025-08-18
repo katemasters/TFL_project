@@ -1,0 +1,174 @@
+---
+title: "S02_data_visualisation"
+author: "KM"
+date: "2025-08-15"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+
+```{r from S01}
+library(tidyverse)
+library(readxl)
+library(dplyr)
+
+
+setwd("C:/Users/katem/OneDrive - University of Cambridge/Summer Project 25/TFL_project/data")
+
+raw_data <- read_csv("TFL_raw_data.csv")
+head(raw_data)
+
+raw_data <- raw_data %>%
+  mutate(prop_survived = survived_recovery / pop_size,
+        prop_fertile = fertile / survived_recovery)
+print(raw_data)
+
+raw_data <- raw_data %>%
+  mutate(x = survived_24hr_cross / no_crossed_w_LHM, 
+        likely_survived = x * survived_recovery, 
+        #prop_survived_2 = likely_survived / pop_size,
+        prop_survived_2 = if_else(survived_24hr_cross == 0 & no_crossed_w_LHM == 0, 
+                              0, 
+                              likely_survived / pop_size),
+        prop_fertile_2 = fertile / survived_24hr_cross)
+print(raw_data)
+
+
+
+
+```
+
+
+
+```{r scatter to compare}
+
+raw_data$prop_survived <- round(raw_data$prop_survived, 5)
+raw_data$prop_survived_2 <- round(raw_data$prop_survived_2, 5)
+raw_data$prop_fertile <- round(raw_data$prop_fertile, 5)
+raw_data$prop_fertile_2 <- round(raw_data$prop_fertile_2, 5)
+
+ggplot(raw_data, aes(x = prop_survived, y = prop_survived_2)) +
+ geom_point() +
+ geom_smooth(method = "lm", se = TRUE)
+  
+
+
+ggplot(raw_data, aes(x = prop_fertile, y = prop_fertile_2)) +
+ geom_point() +
+ geom_smooth(method = "lm", se = TRUE)
+
+
+
+
+```
+
+```{r plotting over temp}
+
+library(ggplot2)
+
+ggplot(raw_data, aes( x = temp_stress, y = prop_fertile)) +
+ geom_point() +
+ geom_smooth(method = "loess", se = TRUE) +
+  theme_minimal()
+  
+ggplot(raw_data, aes(x = temp_stress, y = prop_fertile)) +
+  geom_point() +
+  stat_smooth(method = "glm", 
+              method.args = list(family = "binomial"), 
+              se = TRUE) +
+  #scale_y_continuous(limits = c(0, 1)) +
+  theme_minimal()
+
+ggplot(raw_data, aes(x = temp_stress, y = prop_fertile)) +
+  geom_point() +
+  stat_smooth(method = "glm",
+              formula = y ~ poly(x, 3),
+              method.args = list(family = "binomial"),
+              se = TRUE) +
+  #scale_y_continuous(limits = c(0, 1)) +
+  theme_minimal()
+
+
+ggplot(raw_data, aes(x = temp_stress, y = prop_fertile)) +
+  geom_point() +
+  stat_smooth(method = "gam", formula = y ~ s(x, k=5), se = TRUE) +
+  #scale_y_continuous(limits = c(0,1)) +
+  theme_minimal()
+
+
+
+             
+ggplot(raw_data, aes( x = temp_stress, y = prop_fertile_2)) +
+ geom_point() +
+ geom_smooth(method = "loess", se = TRUE) + 
+  theme_minimal()
+          
+ggplot(raw_data, aes(x = temp_stress, y = prop_fertile_2)) +
+  geom_point() +
+  stat_smooth(method = "glm", 
+              method.args = list(family = "binomial"), 
+              se = TRUE) +
+  #scale_y_continuous(limits = c(0, 1)) +
+  theme_minimal()
+
+ggplot(raw_data, aes(x = temp_stress, y = prop_fertile_2)) +
+  geom_point() +
+  stat_smooth(method = "glm",
+              formula = y ~ poly(x, 3),
+              method.args = list(family = "binomial"),
+              se = TRUE) +
+  #scale_y_continuous(limits = c(0, 1)) +
+  theme_minimal()
+
+
+ggplot(raw_data, aes(x = temp_stress, y = prop_fertile_2)) +
+  geom_point() +
+  stat_smooth(method = "gam", formula = y ~ s(x, k=5), se = TRUE) +
+  scale_y_continuous(limits = c(0,1)) +
+  theme_minimal()
+
+
+library(ggplot2)
+
+library(scales)
+
+
+
+```
+
+```{r}
+
+ggplot(raw_data, aes( x = temp_stress, y = prop_survived)) +
+ geom_point() +
+ geom_smooth(method = "loess", se = TRUE)
+  
+ggplot(raw_data, aes( x = temp_stress, y = prop_survived_2)) +
+ geom_point() +
+ geom_smooth(method = "loess", se = TRUE)
+
+```
+
+
