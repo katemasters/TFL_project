@@ -44,7 +44,7 @@ head(raw_data)
 ```{r survive and fertile}
 raw_data <- raw_data %>%
   mutate(prop_survived = survived_recovery / pop_size,
-        prop_fertile = fertile / survived_recovery)
+        prop_fertile = fertile / no_crossed_w_LHM)
 print(raw_data)
 ```
 The code above only looks at male survival after the recovery period, and ignores whether males died after the 24 hr cross, so trying this: 
