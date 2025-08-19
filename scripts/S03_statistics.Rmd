@@ -1,0 +1,74 @@
+---
+title: "S03_stats_start"
+author: "KM"
+date: "2025-08-19"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+
+```{r}
+setwd("C:/Users/katem/OneDrive - University of Cambridge/Summer Project 25/TFL_project/data")
+
+raw_data <- read_csv("TFL_raw_data.csv")
+head(raw_data)
+
+raw_data <- raw_data %>%
+  mutate(prop_survived = survived_recovery / pop_size,
+        prop_fertile = fertile / no_crossed_w_LHM)
+print(raw_data)
+
+raw_data <- raw_data %>%
+  mutate(x = survived_24hr_cross / no_crossed_w_LHM, 
+        likely_survived = x * survived_recovery, 
+        prop_survived_2 = if_else(survived_24hr_cross == 0 & no_crossed_w_LHM == 0, 
+                              0, 
+                              likely_survived / pop_size),
+        prop_fertile_2 = fertile / (survived_24hr_cross + mdeath_in_fertile_vial))
+print(raw_data)
+
+raw_data <- raw_data %>%
+  mutate(fertile = if_else(genotype == "tT" & temp_stress == 25, 
+                           NA_real_, fertile))
+
+head(raw_data)
+
+```
+
+```{r}
+full_model <- glm(cbind(fertile, 
+                        survived_24hr_cross + mdeath_in_fertile_vial - fertile) ~ 
+                    genotype + temp_stress + temp_development +
+                    stress_time_hr + recovery_time_hr + pop_size + sex_ratio,
+                  family = binomial,
+                  data = raw_data)
+
+library(MASS)
+step_model <- stepAIC(full_model, direction = "both")
+summary(step_model)
+
+```
+the results above are the equivalent of the model for prop_fertile_2 (it just has to be in count form, not already a proportion)
