@@ -30,7 +30,7 @@ plot(pressure)
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
 
 
-```{r from S01}
+```{r from S01, plus add males that died in fertile vials to prop_fertile_2}
 library(tidyverse)
 library(readxl)
 library(dplyr)
@@ -52,10 +52,12 @@ raw_data <- raw_data %>%
         prop_survived_2 = if_else(survived_24hr_cross == 0 & no_crossed_w_LHM == 0, 
                               0, 
                               likely_survived / pop_size),
-        prop_fertile_2 = fertile / survived_24hr_cross)
+        prop_fertile_2 = fertile / (survived_24hr_cross + mdeath_in_fertile_vial))
 print(raw_data)
 
-
+raw_data <- raw_data %>%
+  mutate(fertile = if_else(genotype == "tT" & temp_stress == 25, 
+                           NA_real_, fertile))
 
 
 ```
@@ -84,7 +86,7 @@ ggplot(raw_data, aes(x = prop_fertile, y = prop_fertile_2)) +
 
 ```
 the first graph suggests that both survival measures are fairly equivalent, and I think prop_survived is better to use, as it unaffected by the presence of females (24hr survival rate). 
-The second graph suggests to me that prop_fertile_2 is a more appropriate measure of fertility, as when accounting for loss of males overnight during the second night, we see that fertility increases significantly, often to 1, and there are no vials with both overnight deaths and offspring, showing that death, not sterility, are impacting these vials. 
+The second graph suggests to me that prop_fertile_2 is a more appropriate measure of fertility, as when accounting for loss of males overnight during the second night, we see that fertility increases significantly, and there are no vials with both overnight deaths and offspring, showing that death, not sterility, are impacting these vials. NOTE: now have vials with overnight deaths and offspring ! both important measures.
 So, the two 'prop_fertile' and 'prop_fertile_2' are not interchangeable measures. 
 
 ```{r plotting fert against temp, and limiting y axis to a max value of 1 (for proportions)}
@@ -437,7 +439,12 @@ ggplot(raw_data, aes(x = temp_stress, y = prop_fertile, colour = genotype)) +
   theme_minimal()
 ```
 
-orange at 25 degrees seems to be a big outlier - 12/15 was our only measure annoyingly (12 of 15 vials)
+orange at 25 degrees seems to be a big outlier - 12/15 was our only fertility measure annoyingly (12 of 15 vials). Have removed this from analysis, above. 
+
+
+
+
+
 
 
 
