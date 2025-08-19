@@ -43,13 +43,12 @@ head(raw_data)
 
 raw_data <- raw_data %>%
   mutate(prop_survived = survived_recovery / pop_size,
-        prop_fertile = fertile / survived_recovery)
+        prop_fertile = fertile / no_crossed_w_LHM)
 print(raw_data)
 
 raw_data <- raw_data %>%
   mutate(x = survived_24hr_cross / no_crossed_w_LHM, 
         likely_survived = x * survived_recovery, 
-        #prop_survived_2 = likely_survived / pop_size,
         prop_survived_2 = if_else(survived_24hr_cross == 0 & no_crossed_w_LHM == 0, 
                               0, 
                               likely_survived / pop_size),
@@ -224,5 +223,221 @@ ggplot(raw_data, aes(x = temp_stress, y = prop_survived_2)) +
   theme_minimal()
 
 ```
+
+```{r look at different lines}
+
+
+# LOESS
+ggplot(raw_data, aes(x = temp_stress, y = prop_survived, colour = genotype)) +
+  geom_point() +
+  geom_smooth(method = "loess", se = TRUE) +
+  scale_color_manual(values = c("tT" = "orange", 
+                                "mT" = "yellow", 
+                                "tM" = "green", 
+                                "mM" = "blue")) +
+  theme_minimal()
+
+# GLM (binomial)
+ggplot(raw_data, aes(x = temp_stress, y = prop_survived, colour = genotype)) +
+  geom_point() +
+  stat_smooth(method = "glm", 
+              method.args = list(family = "binomial"), 
+              se = TRUE) +
+  scale_y_continuous(limits = c(0, 1)) +
+  scale_color_manual(values = c("tT" = "orange", 
+                                "mT" = "yellow", 
+                                "tM" = "green", 
+                                "mM" = "blue")) +
+  theme_minimal()
+
+# GLM with cubic polynomial
+ggplot(raw_data, aes(x = temp_stress, y = prop_survived, colour = genotype)) +
+  geom_point() +
+  stat_smooth(method = "glm",
+              formula = y ~ poly(x, 3),
+              method.args = list(family = "binomial"),
+              se = TRUE) +
+  scale_y_continuous(limits = c(0, 1)) +
+  scale_color_manual(values = c("tT" = "orange", 
+                                "mT" = "yellow", 
+                                "tM" = "green", 
+                                "mM" = "blue")) +
+  theme_minimal()
+
+# GAM
+ggplot(raw_data, aes(x = temp_stress, y = prop_survived, colour = genotype)) +
+  geom_point() +
+  stat_smooth(method = "gam", formula = y ~ s(x, k = 5), se = TRUE) +
+  scale_y_continuous(limits = c(0,1)) +
+  scale_color_manual(values = c("tT" = "orange", 
+                                "mT" = "yellow", 
+                                "tM" = "green", 
+                                "mM" = "blue")) +
+  theme_minimal()
+
+```
+
+
+
+```{r} 
+# LOESS
+ggplot(raw_data, aes(x = temp_stress, y = prop_survived_2, colour = genotype)) +
+  geom_point() +
+  geom_smooth(method = "loess", se = TRUE) +
+  scale_color_manual(values = c("tT" = "orange", 
+                                "mT" = "yellow", 
+                                "tM" = "green", 
+                                "mM" = "blue")) +
+  theme_minimal()
+
+# GLM (binomial)
+ggplot(raw_data, aes(x = temp_stress, y = prop_survived_2, colour = genotype)) +
+  geom_point() +
+  stat_smooth(method = "glm", 
+              method.args = list(family = "binomial"), 
+              se = TRUE) +
+  scale_y_continuous(limits = c(0, 1)) +
+  scale_color_manual(values = c("tT" = "orange", 
+                                "mT" = "yellow", 
+                                "tM" = "green", 
+                                "mM" = "blue")) +
+  theme_minimal()
+
+# GLM with cubic polynomial
+ggplot(raw_data, aes(x = temp_stress, y = prop_survived_2, colour = genotype)) +
+  geom_point() +
+  stat_smooth(method = "glm",
+              formula = y ~ poly(x, 3),
+              method.args = list(family = "binomial"),
+              se = TRUE) +
+  scale_y_continuous(limits = c(0, 1)) +
+  scale_color_manual(values = c("tT" = "orange", 
+                                "mT" = "yellow", 
+                                "tM" = "green", 
+                                "mM" = "blue")) +
+  theme_minimal()
+
+# GAM
+ggplot(raw_data, aes(x = temp_stress, y = prop_survived_2, colour = genotype)) +
+  geom_point() +
+  stat_smooth(method = "gam", formula = y ~ s(x, k = 5), se = TRUE) +
+  scale_y_continuous(limits = c(0,1)) +
+  scale_color_manual(values = c("tT" = "orange", 
+                                "mT" = "yellow", 
+                                "tM" = "green", 
+                                "mM" = "blue")) +
+  theme_minimal()
+
+
+```
+
+
+
+
+```{r}
+# LOESS
+ggplot(raw_data, aes(x = temp_stress, y = prop_fertile_2, colour = genotype)) +
+  geom_point() +
+  geom_smooth(method = "loess", se = TRUE) +
+  scale_y_continuous(limits = c(0, 1)) +
+  scale_color_manual(values = c("tT" = "orange", 
+                                "mT" = "yellow", 
+                                "tM" = "green", 
+                                "mM" = "blue")) +
+  theme_minimal()
+
+# GLM (binomial)
+ggplot(raw_data, aes(x = temp_stress, y = prop_fertile_2, colour = genotype)) +
+  geom_point() +
+  stat_smooth(method = "glm", 
+              method.args = list(family = "binomial"), 
+              se = TRUE) +
+  scale_y_continuous(limits = c(0, 1)) +
+  scale_color_manual(values = c("tT" = "orange", 
+                                "mT" = "yellow", 
+                                "tM" = "green", 
+                                "mM" = "blue")) +
+  theme_minimal()
+
+# GLM with cubic polynomial
+ggplot(raw_data, aes(x = temp_stress, y = prop_fertile_2, colour = genotype)) +
+  geom_point() +
+  stat_smooth(method = "glm",
+              formula = y ~ poly(x, 3),
+              method.args = list(family = "binomial"),
+              se = TRUE) +
+  scale_y_continuous(limits = c(0, 1)) +
+  scale_color_manual(values = c("tT" = "orange", 
+                                "mT" = "yellow", 
+                                "tM" = "green", 
+                                "mM" = "blue")) +
+  theme_minimal()
+
+# GAM
+ggplot(raw_data, aes(x = temp_stress, y = prop_fertile_2, colour = genotype)) +
+  geom_point() +
+  stat_smooth(method = "gam", formula = y ~ s(x, k = 5), se = TRUE) +
+  scale_y_continuous(limits = c(0,1)) +
+  scale_color_manual(values = c("tT" = "orange", 
+                                "mT" = "yellow", 
+                                "tM" = "green", 
+                                "mM" = "blue")) +
+  theme_minimal()
+
+
+```
+had a look at flies and can see in some vials, males died during the cross but still had offspring - so must not be ignored (prop_fertile)
+```{r}
+ggplot(raw_data, aes(x = temp_stress, y = prop_fertile, colour = genotype)) +
+  geom_point() +
+  geom_smooth(method = "loess", se = TRUE) +
+  scale_y_continuous(limits = c(0, 1)) +
+  scale_color_manual(values = c("tT" = "orange", 
+                                "mT" = "yellow", 
+                                "tM" = "green", 
+                                "mM" = "blue")) +
+  theme_minimal()
+
+# GLM (binomial)
+ggplot(raw_data, aes(x = temp_stress, y = prop_fertile, colour = genotype)) +
+  geom_point() +
+  stat_smooth(method = "glm", 
+              method.args = list(family = "binomial"), 
+              se = TRUE) +
+  scale_y_continuous(limits = c(0, 1)) +
+  scale_color_manual(values = c("tT" = "orange", 
+                                "mT" = "yellow", 
+                                "tM" = "green", 
+                                "mM" = "blue")) +
+  theme_minimal()
+
+# GLM with cubic polynomial
+ggplot(raw_data, aes(x = temp_stress, y = prop_fertile, colour = genotype)) +
+  geom_point() +
+  stat_smooth(method = "glm",
+              formula = y ~ poly(x, 3),
+              method.args = list(family = "binomial"),
+              se = TRUE) +
+  scale_y_continuous(limits = c(0, 1)) +
+  scale_color_manual(values = c("tT" = "orange", 
+                                "mT" = "yellow", 
+                                "tM" = "green", 
+                                "mM" = "blue")) +
+  theme_minimal()
+
+# GAM
+ggplot(raw_data, aes(x = temp_stress, y = prop_fertile, colour = genotype)) +
+  geom_point() +
+  stat_smooth(method = "gam", formula = y ~ s(x, k = 5), se = TRUE) +
+  scale_y_continuous(limits = c(0,1)) +
+  scale_color_manual(values = c("tT" = "orange", 
+                                "mT" = "yellow", 
+                                "tM" = "green", 
+                                "mM" = "blue")) +
+  theme_minimal()
+```
+
+orange at 25 degrees seems to be a big outlier - 12/15 was our only measure annoyingly (12 of 15 vials)
+
 
 
