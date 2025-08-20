@@ -40,6 +40,8 @@ setwd("C:/Users/katem/OneDrive - University of Cambridge/Summer Project 25/TFL_p
 raw_data <- read_csv("TFL_raw_data.csv")
 head(raw_data)
 
+
+
 ```
 ```{r survive and fertile}
 raw_data <- raw_data %>%
@@ -60,6 +62,12 @@ raw_data <- raw_data %>%
         prop_fertile_2 = fertile / survived_24hr_cross)
 print(raw_data)
 
+
+
+raw_data <- raw_data %>%
+  mutate(fertile = if_else(genotype == "tT" & temp_stress == 25, 
+                           NA_real_, fertile))
+
 ```
 ```{r compare f}
 print(
@@ -78,10 +86,44 @@ print(
     prop4 = raw_data$prop_survived_2
   )
 )
-
 ```
 
 ```{r save data}
+
+library(tidyr)
+library(dplyr)
+library(readr)
+
+# First calculate flags per group BEFORE uncount
+expanded_data <- raw_data %>%
+  # Keep counts as-is for flag calculation after expansion
+  mutate(
+    survived_recovery_flag_count = survived_recovery,
+    crossed_flag_count = no_crossed_w_LHM,
+    survived_24hr_flag_count = survived_24hr_cross,
+    fertile_flag_count = fertile
+  ) %>%
+  # Expand rows by population size
+  uncount(weights = pop_size) %>%
+  group_by(genotype, bloc, temp_stress) %>%
+  mutate(
+    fly_id = row_number(),
+    survived_recovery_flag = ifelse(fly_id <= first(survived_recovery_flag_count), 1, 0),
+    crossed_flag = ifelse(fly_id <= first(crossed_flag_count), 1, 0),
+    survived_24hr_flag = ifelse(fly_id <= first(survived_24hr_flag_count), 1, 0),
+    fertile_flag = ifelse(fly_id <= first(fertile_flag_count), 1, 0)
+  ) %>%
+  ungroup() %>%
+  # Remove the old columns used for counts
+  select(-survived_recovery, -no_crossed_w_LHM, 
+         -survived_24hr_cross, -fertile,
+         -survived_recovery_flag_count, -crossed_flag_count, 
+         -survived_24hr_flag_count, -fertile_flag_count)
+
+# Write to a new CSV
+write_csv(expanded_data, "TFL_raw_data_expanded.csv")
+
+
 
 
 ```
