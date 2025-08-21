@@ -41,7 +41,7 @@ print(survival_data)
 
 readr::write_csv(
   x = survival_data,
-  path = here(path_to_data, "survival_frac.csv")
+  path = here(path_to_data, "survival_data.csv")
   )
 ```
 
@@ -52,7 +52,8 @@ survival_data_averages <- survival_data %>%
   filter(total > 10) %>%
   group_by(genotype, temp, bloc) %>%
   reframe(
-    mean_survival = mean(prop_survived, na.rm = TRUE)
+    mean_survival = mean(prop_survived, na.rm = TRUE),
+    sd_survival = sd(prop_survived, na.rm = TRUE)
   )
 survival_data_averages
 
