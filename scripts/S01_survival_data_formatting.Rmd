@@ -1,0 +1,68 @@
+---
+title: "S01_data_formatting"
+author: "KM"
+date: "2025-08-14"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+```{r import}
+library(tidyverse)
+library(readxl)
+library(dplyr)
+
+
+
+install.packages("here")
+library(here)
+
+path_to_data <- here::here("data","survival")
+
+survival_data <- readr::read_csv(
+  file = file.path(path_to_data, "raw_survival.csv")
+)
+
+head(survival_data)
+```
+
+```{r survive-prop}
+survival_data <- survival_data %>%
+  mutate(prop_survived = survived / total,
+         )
+print(survival_data)
+```
+
+```{r save-as-csv}
+
+readr::write_csv(
+  x = survival_data,
+  path = here(path_to_data, "survival_frac.csv")
+  )
+```
+
+```{r make-averages}
+
+
+survival_data_averages <- survival_data %>%
+  filter(total > 10) %>%
+  group_by(genotype, temp, bloc) %>%
+  reframe(
+    mean_survival = mean(prop_survived, na.rm = TRUE)
+  )
+survival_data_averages
+
+```
+
+```{r}
+#save averages
+
+readr::write_csv(
+  x = survival_data_averages,
+  path = here(path_to_data, "survival_mean.csv")
+  )
+```
