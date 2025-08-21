@@ -1,0 +1,149 @@
+---
+title: "S02_survival_visualisation"
+author: "KM"
+date: "2025-08-21"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+```{r}
+library(tidyverse, quietly = TRUE)
+library(readxl)
+library(dplyr)
+#install.packages("here")
+library(here)
+library(ggplot2)
+
+# source palettes 
+source(here::here("scripts/S00_config.R"))
+
+
+```
+
+```{r}
+path_to_data <- here::here("data","survival")
+path_to_results <- here::here("results", "survival", "R02_survival_visualisation")
+
+survival_data <- readr::read_csv(
+  file = file.path(path_to_data, "survival_data.csv")
+)
+
+
+survival_data_averages <- readr::read_csv(
+   file = file.path(path_to_data, "survival_mean.csv")
+)
+```
+```{r}
+survival_data_averages$genotype <- factor(
+  survival_data_averages$genotype,
+  levels = c("mM", "tM", "mT", "tT")
+)
+```
+```{r}
+survival_data <- survival_data %>%
+  filter(temp !=38)
+
+survival_data_averages <- survival_data_averages %>%
+  filter(temp !=38)
+```
+
+```{r}
+
+ggplot(survival_data, aes(x = temp, y = prop_survived, colour = genotype)) +
+  geom_point() +
+  #stat_smooth(method = "glm", 
+  #            method.args = list(family = "binomial"), 
+  #            se = FALSE) +
+  scale_y_continuous(limits = c(0, 1)) +
+  scale_color_manual(values = genotype_palette) +
+  theme_minimal()
+```
+
+```{r}
+
+ggplot(survival_data_averages, aes(x = temp, y = mean_survival, colour = genotype)) +
+  geom_point() +
+  stat_smooth(method = "glm", 
+              method.args = list(family = "binomial"), 
+              se = FALSE) +
+  scale_y_continuous(limits = c(0, 1)) +
+  scale_color_manual(values = genotype_palette) +
+  theme_minimal()
+```
+
+```{r facet-grid}
+
+ggplot(
+ data = survival_data %>% filter(temp > 37), 
+  mapping = aes(
+    x = genotype,
+    y = prop_survived,
+    colour = genotype
+  )
+) +
+  geom_point(
+    position = position_dodge(0.5),
+    size = 3
+  ) +
+  scale_y_continuous(limits = c(0, 1)) +
+  scale_color_manual(values = genotype_palette) +
+  theme_minimal() +
+  facet_grid(~ temp) +
+  theme(
+    axis.text.x = element_blank()
+  )
+```
+
+ 
+
+```{r}
+ggplot(
+  data = survival_data_averages %>% filter(temp > 37), 
+  mapping = aes(
+    x = genotype,
+    y = mean_survival,
+    colour = genotype
+  )
+) +
+  geom_point(
+    position = position_dodge(0.5),
+    size = 3
+  ) +
+  scale_y_continuous(limits = c(0, 1)) +
+  scale_color_manual(values = genotype_palette) +
+  geom_errorbar(
+    aes(ymin = mean_survival - sd_survival, ymax = mean_survival + sd_survival)
+  ) +
+  labs(
+    y = "mean survival" 
+    ) +
+  theme_minimal() +
+  facet_grid(~ temp) +
+  theme(
+    axis.text.x = element_blank(), 
+    legend.title = element_text()
+    
+  )
+
+
+```
+```{r}
+ggsave(
+  filename = here(path_to_results, "F01_mean_survival_facet.pdf"),
+  plot = last_plot(),
+  width = 10,
+  height = 7 
+  
+)
+
+
+
+```
+
+
+
