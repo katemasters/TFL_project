@@ -263,7 +263,7 @@ ggplot(raw_data, aes(x = temp_stress, y = prop_survived_2, colour = genotype)) +
   geom_point() +
   stat_smooth(method = "glm", 
               method.args = list(family = "binomial"), 
-              se = FALSE) +
+              se = TRUE) +
   scale_y_continuous(limits = c(0, 1)) +
   scale_color_manual(values = genotype_palette) +
   theme_minimal()
@@ -303,7 +303,8 @@ ggplot(raw_data, aes(x = temp_stress, y = prop_fertile_2, colour = genotype)) +
   theme_minimal()
 
 # GLM (binomial)
-ggplot(raw_data, aes(x = temp_stress, y = prop_fertile_2, colour = genotype)) +
+ggplot(raw_data|>
+         filter(temp_stress >37), aes(x = temp_stress, y = prop_fertile_2, colour = genotype)) +
   geom_point() +
   stat_smooth(method = "glm", 
               method.args = list(family = "binomial"), 
@@ -313,7 +314,8 @@ ggplot(raw_data, aes(x = temp_stress, y = prop_fertile_2, colour = genotype)) +
   theme_minimal()
 
 # GLM with cubic polynomial
-ggplot(raw_data, aes(x = temp_stress, y = prop_fertile_2, colour = genotype)) +
+ggplot(raw_data|>
+         filter(temp_stress >37), aes(x = temp_stress, y = prop_fertile_2, colour = genotype)) +
   geom_point() +
   stat_smooth(method = "glm",
               formula = y ~ poly(x, 3),
@@ -391,7 +393,7 @@ raw_data$genotype <- factor(
 ggplot(
   data = raw_data %>% filter(temp_stress > 36), 
   mapping = aes(
-    x = genotype,
+    x = temp_stress,
     y = prop_fertile_2,
     colour = genotype
   )
@@ -406,7 +408,8 @@ ggplot(
   #  aes(ymin = mean_survival - sd_survival, ymax = mean_survival + sd_survival)
   #) +
   labs(
-    y = "fertility" 
+    y = "fertility", 
+    x = "temperature"
     ) +
   theme_minimal() +
   facet_grid(~ temp_stress) +
@@ -439,8 +442,6 @@ ggsave(
   
 )
 
-
-1
 
 ```
 
