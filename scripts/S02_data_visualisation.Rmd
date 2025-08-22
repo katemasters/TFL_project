@@ -5,29 +5,6 @@ date: "2025-08-15"
 output: html_document
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
-
-## R Markdown
-
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
-```
-
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
 
 
 ```{r from S01, plus add males that died in fertile vials to prop_fertile_2}
@@ -35,8 +12,12 @@ library(tidyverse)
 library(readxl)
 library(dplyr)
 
+#install.packages("here")
 
 setwd("C:/Users/katem/OneDrive - University of Cambridge/Summer Project 25/TFL_project/data")
+
+
+
 
 raw_data <- read_csv("TFL_raw_data.csv")
 head(raw_data)
@@ -59,6 +40,8 @@ raw_data <- raw_data %>%
   mutate(fertile = if_else(genotype == "tT" & temp_stress == 25, 
                            NA_real_, fertile))
 
+raw_data <- raw_data %>%
+  filter(temp_stress !=38)
 
 ```
 
@@ -95,14 +78,14 @@ library(ggplot2)
 
 ggplot(raw_data, aes( x = temp_stress, y = prop_fertile)) +
  geom_point() +
- geom_smooth(method = "loess", se = TRUE) +
+ geom_smooth(method = "loess", se = FALSE) +
   theme_minimal()
   
 ggplot(raw_data, aes(x = temp_stress, y = prop_fertile)) +
   geom_point() +
   stat_smooth(method = "glm", 
               method.args = list(family = "binomial"), 
-              se = TRUE) +
+              se = FALSE) +
   #scale_y_continuous(limits = c(0, 1)) +
   theme_minimal()
 
@@ -111,14 +94,14 @@ ggplot(raw_data, aes(x = temp_stress, y = prop_fertile)) +
   stat_smooth(method = "glm",
               formula = y ~ poly(x, 3),
               method.args = list(family = "binomial"),
-              se = TRUE) +
+              se = FALSE) +
   #scale_y_continuous(limits = c(0, 1)) +
   theme_minimal()
 
 
 ggplot(raw_data, aes(x = temp_stress, y = prop_fertile)) +
   geom_point() +
-  stat_smooth(method = "gam", formula = y ~ s(x, k=5), se = TRUE) +
+  stat_smooth(method = "gam", formula = y ~ s(x, k=5), se = FALSE) +
   scale_y_continuous(limits = c(0,1)) +
   theme_minimal()
 
@@ -127,14 +110,14 @@ ggplot(raw_data, aes(x = temp_stress, y = prop_fertile)) +
              
 ggplot(raw_data, aes( x = temp_stress, y = prop_fertile_2)) +
  geom_point() +
- geom_smooth(method = "loess", se = TRUE) + 
+ geom_smooth(method = "loess", se = FALSE) + 
   theme_minimal()
           
 ggplot(raw_data, aes(x = temp_stress, y = prop_fertile_2)) +
   geom_point() +
   stat_smooth(method = "glm", 
               method.args = list(family = "binomial"), 
-              se = TRUE) +
+              se = FALSE) +
   #scale_y_continuous(limits = c(0, 1)) +
   theme_minimal()
 
@@ -143,14 +126,14 @@ ggplot(raw_data, aes(x = temp_stress, y = prop_fertile_2)) +
   stat_smooth(method = "glm",
               formula = y ~ poly(x, 3),
               method.args = list(family = "binomial"),
-              se = TRUE) +
+              se = FALSE) +
   #scale_y_continuous(limits = c(0, 1)) +
   theme_minimal()
 
 
 ggplot(raw_data, aes(x = temp_stress, y = prop_fertile_2)) +
   geom_point() +
-  stat_smooth(method = "gam", formula = y ~ s(x, k=5), se = TRUE) +
+  stat_smooth(method = "gam", formula = y ~ s(x, k=5), se = FALSE) +
   scale_y_continuous(limits = c(0,1)) +
   theme_minimal()
 
@@ -167,14 +150,14 @@ library(scales)
 
 ggplot(raw_data, aes( x = temp_stress, y = prop_survived)) +
  geom_point() +
- geom_smooth(method = "loess", se = TRUE) +
+ geom_smooth(method = "loess", se = FALSE) +
   theme_minimal()
 
 ggplot(raw_data, aes(x = temp_stress, y = prop_survived)) +
   geom_point() +
   stat_smooth(method = "glm", 
               method.args = list(family = "binomial"), 
-              se = TRUE) +
+              se = FALSE) +
   scale_y_continuous(limits = c(0, 1)) +
   theme_minimal()
 
@@ -183,29 +166,27 @@ ggplot(raw_data, aes(x = temp_stress, y = prop_survived)) +
   stat_smooth(method = "glm",
               formula = y ~ poly(x, 3),
               method.args = list(family = "binomial"),
-              se = TRUE) +
+              se = FALSE) +
   scale_y_continuous(limits = c(0, 1)) +
   theme_minimal()
 
 ggplot(raw_data, aes(x = temp_stress, y = prop_survived)) +
   geom_point() +
-  stat_smooth(method = "gam", formula = y ~ s(x, k=5), se = TRUE) +
+  stat_smooth(method = "gam", formula = y ~ s(x, k=5), se = FALSE) +
   scale_y_continuous(limits = c(0,1)) +
   theme_minimal()
   
 
-
-
 ggplot(raw_data, aes( x = temp_stress, y = prop_survived_2)) +
  geom_point() +
- geom_smooth(method = "loess", se = TRUE) +
+ geom_smooth(method = "loess", se = FALSE) +
   theme_minimal()
 
 ggplot(raw_data, aes(x = temp_stress, y = prop_survived_2)) +
   geom_point() +
   stat_smooth(method = "glm", 
               method.args = list(family = "binomial"), 
-              se = TRUE) +
+              se = FALSE) +
   scale_y_continuous(limits = c(0, 1)) +
   theme_minimal()
 
@@ -214,13 +195,13 @@ ggplot(raw_data, aes(x = temp_stress, y = prop_survived_2)) +
   stat_smooth(method = "glm",
               formula = y ~ poly(x, 3),
               method.args = list(family = "binomial"),
-              se = TRUE) +
+              se = FALSE) +
   scale_y_continuous(limits = c(0, 1)) +
   theme_minimal()
 
 ggplot(raw_data, aes(x = temp_stress, y = prop_survived_2)) +
   geom_point() +
-  stat_smooth(method = "gam", formula = y ~ s(x, k=5), se = TRUE) +
+  stat_smooth(method = "gam", formula = y ~ s(x, k=5), se = FALSE) +
   scale_y_continuous(limits = c(0,1)) +
   theme_minimal()
 
@@ -232,11 +213,8 @@ ggplot(raw_data, aes(x = temp_stress, y = prop_survived_2)) +
 # LOESS
 ggplot(raw_data, aes(x = temp_stress, y = prop_survived, colour = genotype)) +
   geom_point() +
-  geom_smooth(method = "loess", se = TRUE) +
-  scale_color_manual(values = c("tT" = "orange", 
-                                "mT" = "yellow", 
-                                "tM" = "green", 
-                                "mM" = "blue")) +
+  geom_smooth(method = "loess", se = FALSE) +
+  scale_color_manual(values = genotype_palette) +
   theme_minimal()
 
 # GLM (binomial)
@@ -244,12 +222,9 @@ ggplot(raw_data, aes(x = temp_stress, y = prop_survived, colour = genotype)) +
   geom_point() +
   stat_smooth(method = "glm", 
               method.args = list(family = "binomial"), 
-              se = TRUE) +
+              se = FALSE) +
   scale_y_continuous(limits = c(0, 1)) +
-  scale_color_manual(values = c("tT" = "orange", 
-                                "mT" = "yellow", 
-                                "tM" = "green", 
-                                "mM" = "blue")) +
+  scale_color_manual(values = genotype_palette) +
   theme_minimal()
 
 # GLM with cubic polynomial
@@ -258,23 +233,17 @@ ggplot(raw_data, aes(x = temp_stress, y = prop_survived, colour = genotype)) +
   stat_smooth(method = "glm",
               formula = y ~ poly(x, 3),
               method.args = list(family = "binomial"),
-              se = TRUE) +
+              se = FALSE) +
   scale_y_continuous(limits = c(0, 1)) +
-  scale_color_manual(values = c("tT" = "orange", 
-                                "mT" = "yellow", 
-                                "tM" = "green", 
-                                "mM" = "blue")) +
+  scale_color_manual(values = genotype_palette) +
   theme_minimal()
 
 # GAM
 ggplot(raw_data, aes(x = temp_stress, y = prop_survived, colour = genotype)) +
   geom_point() +
-  stat_smooth(method = "gam", formula = y ~ s(x, k = 5), se = TRUE) +
+  stat_smooth(method = "gam", formula = y ~ s(x, k = 5), se = FALSE) +
   scale_y_continuous(limits = c(0,1)) +
-  scale_color_manual(values = c("tT" = "orange", 
-                                "mT" = "yellow", 
-                                "tM" = "green", 
-                                "mM" = "blue")) +
+  scale_color_manual(values = genotype_palette) +
   theme_minimal()
 
 ```
@@ -285,11 +254,8 @@ ggplot(raw_data, aes(x = temp_stress, y = prop_survived, colour = genotype)) +
 # LOESS
 ggplot(raw_data, aes(x = temp_stress, y = prop_survived_2, colour = genotype)) +
   geom_point() +
-  geom_smooth(method = "loess", se = TRUE) +
-  scale_color_manual(values = c("tT" = "orange", 
-                                "mT" = "yellow", 
-                                "tM" = "green", 
-                                "mM" = "blue")) +
+  geom_smooth(method = "loess", se = FALSE) +
+  scale_color_manual(values = genotype_palette) +
   theme_minimal()
 
 # GLM (binomial)
@@ -297,12 +263,9 @@ ggplot(raw_data, aes(x = temp_stress, y = prop_survived_2, colour = genotype)) +
   geom_point() +
   stat_smooth(method = "glm", 
               method.args = list(family = "binomial"), 
-              se = TRUE) +
+              se = FALSE) +
   scale_y_continuous(limits = c(0, 1)) +
-  scale_color_manual(values = c("tT" = "orange", 
-                                "mT" = "yellow", 
-                                "tM" = "green", 
-                                "mM" = "blue")) +
+  scale_color_manual(values = genotype_palette) +
   theme_minimal()
 
 # GLM with cubic polynomial
@@ -311,23 +274,17 @@ ggplot(raw_data, aes(x = temp_stress, y = prop_survived_2, colour = genotype)) +
   stat_smooth(method = "glm",
               formula = y ~ poly(x, 3),
               method.args = list(family = "binomial"),
-              se = TRUE) +
+              se = FALSE) +
   scale_y_continuous(limits = c(0, 1)) +
-  scale_color_manual(values = c("tT" = "orange", 
-                                "mT" = "yellow", 
-                                "tM" = "green", 
-                                "mM" = "blue")) +
+  scale_color_manual(values = genotype_palette) +
   theme_minimal()
 
 # GAM
 ggplot(raw_data, aes(x = temp_stress, y = prop_survived_2, colour = genotype)) +
   geom_point() +
-  stat_smooth(method = "gam", formula = y ~ s(x, k = 5), se = TRUE) +
+  stat_smooth(method = "gam", formula = y ~ s(x, k = 5), se = FALSE) +
   scale_y_continuous(limits = c(0,1)) +
-  scale_color_manual(values = c("tT" = "orange", 
-                                "mT" = "yellow", 
-                                "tM" = "green", 
-                                "mM" = "blue")) +
+  scale_color_manual(values = genotype_palette) +
   theme_minimal()
 
 
@@ -340,12 +297,9 @@ ggplot(raw_data, aes(x = temp_stress, y = prop_survived_2, colour = genotype)) +
 # LOESS
 ggplot(raw_data, aes(x = temp_stress, y = prop_fertile_2, colour = genotype)) +
   geom_point() +
-  geom_smooth(method = "loess", se = TRUE) +
+  geom_smooth(method = "loess", se = FALSE) +
   scale_y_continuous(limits = c(0, 1)) +
-  scale_color_manual(values = c("tT" = "orange", 
-                                "mT" = "yellow", 
-                                "tM" = "green", 
-                                "mM" = "blue")) +
+  scale_color_manual(values = genotype_palette) +
   theme_minimal()
 
 # GLM (binomial)
@@ -353,12 +307,9 @@ ggplot(raw_data, aes(x = temp_stress, y = prop_fertile_2, colour = genotype)) +
   geom_point() +
   stat_smooth(method = "glm", 
               method.args = list(family = "binomial"), 
-              se = TRUE) +
+              se = FALSE) +
   scale_y_continuous(limits = c(0, 1)) +
-  scale_color_manual(values = c("tT" = "orange", 
-                                "mT" = "yellow", 
-                                "tM" = "green", 
-                                "mM" = "blue")) +
+  scale_color_manual(values = genotype_palette) +
   theme_minimal()
 
 # GLM with cubic polynomial
@@ -367,23 +318,17 @@ ggplot(raw_data, aes(x = temp_stress, y = prop_fertile_2, colour = genotype)) +
   stat_smooth(method = "glm",
               formula = y ~ poly(x, 3),
               method.args = list(family = "binomial"),
-              se = TRUE) +
+              se = FALSE) +
   scale_y_continuous(limits = c(0, 1)) +
-  scale_color_manual(values = c("tT" = "orange", 
-                                "mT" = "yellow", 
-                                "tM" = "green", 
-                                "mM" = "blue")) +
+  scale_color_manual(values = genotype_palette) +
   theme_minimal()
 
 # GAM
 ggplot(raw_data, aes(x = temp_stress, y = prop_fertile_2, colour = genotype)) +
   geom_point() +
-  stat_smooth(method = "gam", formula = y ~ s(x, k = 5), se = TRUE) +
+  stat_smooth(method = "gam", formula = y ~ s(x, k = 5), se = FALSE) +
   scale_y_continuous(limits = c(0,1)) +
-  scale_color_manual(values = c("tT" = "orange", 
-                                "mT" = "yellow", 
-                                "tM" = "green", 
-                                "mM" = "blue")) +
+  scale_color_manual(values = genotype_palette) +
   theme_minimal()
 
 
@@ -392,12 +337,9 @@ had a look at flies and can see in some vials, males died during the cross but s
 ```{r}
 ggplot(raw_data, aes(x = temp_stress, y = prop_fertile, colour = genotype)) +
   geom_point() +
-  geom_smooth(method = "loess", se = TRUE) +
+  geom_smooth(method = "loess", se = FALSE) +
   scale_y_continuous(limits = c(0, 1)) +
-  scale_color_manual(values = c("tT" = "orange", 
-                                "mT" = "yellow", 
-                                "tM" = "green", 
-                                "mM" = "blue")) +
+  scale_color_manual(values = genotype_palette) +
   theme_minimal()
 
 # GLM (binomial)
@@ -405,12 +347,9 @@ ggplot(raw_data, aes(x = temp_stress, y = prop_fertile, colour = genotype)) +
   geom_point() +
   stat_smooth(method = "glm", 
               method.args = list(family = "binomial"), 
-              se = TRUE) +
+              se = FALSE) +
   scale_y_continuous(limits = c(0, 1)) +
-  scale_color_manual(values = c("tT" = "orange", 
-                                "mT" = "yellow", 
-                                "tM" = "green", 
-                                "mM" = "blue")) +
+  scale_color_manual(values = genotype_palette) +
   theme_minimal()
 
 # GLM with cubic polynomial
@@ -419,31 +358,91 @@ ggplot(raw_data, aes(x = temp_stress, y = prop_fertile, colour = genotype)) +
   stat_smooth(method = "glm",
               formula = y ~ poly(x, 3),
               method.args = list(family = "binomial"),
-              se = TRUE) +
+              se = FALSE) +
   scale_y_continuous(limits = c(0, 1)) +
-  scale_color_manual(values = c("tT" = "orange", 
-                                "mT" = "yellow", 
-                                "tM" = "green", 
-                                "mM" = "blue")) +
+  scale_color_manual(values = genotype_palette) +
   theme_minimal()
 
 # GAM
 ggplot(raw_data, aes(x = temp_stress, y = prop_fertile, colour = genotype)) +
   geom_point() +
-  stat_smooth(method = "gam", formula = y ~ s(x, k = 5), se = TRUE) +
+  stat_smooth(method = "gam", formula = y ~ s(x, k = 5), se = FALSE) +
   scale_y_continuous(limits = c(0,1)) +
-  scale_color_manual(values = c("tT" = "orange", 
-                                "mT" = "yellow", 
-                                "tM" = "green", 
-                                "mM" = "blue")) +
+  scale_color_manual(values = genotype_palette) +
   theme_minimal()
 ```
 
-orange at 25 degrees seems to be a big outlier - 12/15 was our only fertility measure annoyingly (12 of 15 vials). Have removed this from analysis, above. 
+orange at 25 degrees seems to be a big outlier - 12/15 was our only fertility measure annoyingly (12 of 15 vials). Have removed this from analysis, above, in first block 
 
 
 
 
+trying facet grid now... 
+
+```{r}
+raw_data <- raw_data %>%
+  filter(temp_stress !=38)
+
+raw_data$genotype <- factor(
+  raw_data$genotype,
+  levels = c("mM", "tM", "mT", "tT")
+)
+
+ggplot(
+  data = raw_data %>% filter(temp_stress > 36), 
+  mapping = aes(
+    x = genotype,
+    y = prop_fertile_2,
+    colour = genotype
+  )
+) +
+  geom_point(
+    position = position_dodge(0.5),
+    size = 3
+  ) +
+  scale_y_continuous(limits = c(0, 1)) +
+  scale_color_manual(values = genotype_palette) +
+  #geom_errorbar(
+  #  aes(ymin = mean_survival - sd_survival, ymax = mean_survival + sd_survival)
+  #) +
+  labs(
+    y = "fertility" 
+    ) +
+  theme_minimal() +
+  facet_grid(~ temp_stress) +
+  theme(
+    axis.text.x = element_blank(), 
+    legend.title = element_text()
+    
+  )
+
+```
+
+```{r}
+
+  
+path_to_results <- here::here("results", "fertility", "R02_fertility_visualisation")
+
+
+
+
+
+
+```
+
+```{r}
+ggsave(
+  filename = here(path_to_results, "F01_fertility_facet.pdf"),
+  plot = last_plot(),
+  width = 10,
+  height = 7 
+  
+)
+
+
+1
+
+```
 
 
 
